@@ -1,2 +1,2 @@
-# SASIT
-start aternos server in telegram
+GeoPolitix game
+coming soon...
