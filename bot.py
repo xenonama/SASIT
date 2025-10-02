@@ -3,6 +3,7 @@ import logging
 from datetime import datetime, timedelta
 import random
 import json
+import asyncio
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler, MessageHandler, filters, ContextTypes
 
@@ -20,7 +21,6 @@ if not TOKEN:
 
 # دیتابیس در حافظه
 users_db = {}
-attacks_queue = {}
 spam_tracker = {}
 user_penalties = {}
 
@@ -115,7 +115,6 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 /profile - پروفایل
 /leaderboard - جدول رتبه بندی
 /allies - مدیریت متحدان
-/attack - حمله
         """
     else:
         user = users_db[user_id]
@@ -264,8 +263,15 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "/help - راهنما"
         )
 
+async def post_init(application: Application):
+    # این تابع بعد از راه‌اندازی ربات اجرا می‌شود
+    await application.bot.set_webhook(
+        f"https://{os.environ.get('RENDER_EXTERNAL_HOSTNAME')}/{TOKEN}"
+    )
+
 def main():
-    application = Application.builder().token(TOKEN).build()
+    # ایجاد application
+    application = Application.builder().token(TOKEN).post_init(post_init).build()
     
     # اضافه کردن هندلرها
     application.add_handler(CommandHandler("start", start))
@@ -278,19 +284,20 @@ def main():
     
     # شروع ربات
     port = int(os.environ.get('PORT', 8443))
-    logging.info(f"🤖 GeoPolitix Bot is running on port {port}...")
+    logging.info(f"🤖 GeoPolitix Bot is starting on port {port}...")
     
     if os.environ.get('RENDER'):
         # روی Render از webhook استفاده می‌کنیم
-        webhook_url = f"https://{os.environ.get('RENDER_EXTERNAL_HOSTNAME')}/{TOKEN}"
+        logging.info("🚀 Running in production mode with webhook...")
         application.run_webhook(
             listen="0.0.0.0",
             port=port,
-            url_path=TOKEN,
-            webhook_url=webhook_url
+            secret_token=TOKEN,
+            webhook_url=f"https://{os.environ.get('RENDER_EXTERNAL_HOSTNAME')}/{TOKEN}"
         )
     else:
         # روی local از polling استفاده می‌کنیم
+        logging.info("🔧 Running in development mode with polling...")
         application.run_polling()
 
 if __name__ == "__main__":
