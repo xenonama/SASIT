@@ -14,7 +14,7 @@ logging.basicConfig(
 )
 
 # گرفتن توکن از متغیر محیطی
-TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
+TOKEN = os.getenv('8026391620:AAGsQTUZYbCFcvhrLVaUihcGFmsTZA52mHY')
 if not TOKEN:
     logging.error("❌ TELEGRAM_BOT_TOKEN not found in environment variables!")
     exit(1)
@@ -302,3 +302,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
