@@ -11,7 +11,7 @@ import math
 import telebot
 from telebot import types
 
-API_TOKEN = "8026391620:AAGsQTUZYbCFcvhrLVaUihcGFmsTZA52mHY"  # <-- اینجا توکن رو بذار
+API_TOKEN = ""  # <-- اینجا توکن رو بذار
 
 DB_PATH = "geopolitix.db"
 # یک لاک ساده برای جلوگیری از race condition در sqlite (session-wide)
@@ -392,3 +392,4 @@ if __name__ == "__main__":
     seed_data()
     print("Bot is polling. Press Ctrl+C to stop.")
     bot.infinity_polling(timeout=60, long_polling_timeout=60)
+
